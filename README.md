@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a complete, step-by-step guide for cleaning, merging, validating, and processing GTFS (General Transit Feed Specification) data for intercity bus feeds. `GTFS_Data_Processing.ipynb` contains the end-to-end Data_Processing code used to process the data. The goal is to prepare the data for mapping and analysis in GIS tools like ArcGIS Pro or QGIS.
+This repository offers GTFS (General Transit Feed Specification) based datasets in both GeoJSON and consolidated GTFS feed formats, along with a comprehensive step-by-step guide for cleaning, merging, validating, and processing GTFS data for intercity bus feeds. `GTFS_Data_Processing.ipynb` includes the complete data processing code. The processed data is intended for mapping and analysis in GIS tools such as ArcGIS Pro or QGIS.
 
 ## Table of Contents
 
