@@ -1,4 +1,4 @@
-# Intercity Bus GTFS (IBG) Workflow
+# Intercity Bus GTFS Database (IBG) Workflow
 
 ## Overview
 
