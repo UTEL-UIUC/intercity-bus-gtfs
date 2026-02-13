@@ -1,0 +1,73 @@
+agency_name,data_source,source_date,download_date,URL
+Academy Bus,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Adirondack Trailways,Transitland,6/25/2025,6/25/2025,https://maps.tds.ai/storage/gtfs-feeds/ADT/fb551f94ffd56bb15e28e862f/gtfs.zip
+All Aboard America,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+American Star Tours,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Badger Bus,Manual,6/18/2025,N/A,N/A
+Barons Bus Lines,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+BayRunner Shuttle,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+BeeLine Express-Village Travel,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Best Bus,Manual,6/19/2025,N/A,N/A
+Burlington Trailways,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+C&J Bus Lines,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Central Oregon Breeze,Transitland,3/20/2025,4/22/2025,https://www.transit.land/feeds/f-9rc-cobreeze~or~us
+Coach USA Erie,Transitland,5/26/2025,6/24/2025,https://api.prod.coachusa.com/gtfs
+Bustang (CDOT),Transitland,9/12/2025,9/12/2025,https://www.rtd-denver.com/files/gtfs/bustang-co-us.zip
+Concord Coach Lines,Manual,5/8/2025,N/A,N/A
+CorridorRides,Transitland,5/19/2025,6/16/2025,https://www.transit.land/feeds/f-corridorrides
+CYR Bus Line,Manual,5/31/2025,N/A,N/A
+DATTCO,Mobility Database,1/22/2025,9/3/2025,https://mobilitydatabase.org/feeds/gtfs/mdb-555
+Delta Bus Lines Inc.,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Detroit Ann Arbor Express,Transitland,10/23/2024,4/22/2025,https://www.transit.land/feeds/f-dps-michiganflyer~mi~us
+Diamond Express,Transitland,1/16/2025,4/22/2025,https://www.transit.land/feeds/f-9rb-diamondexpress~or~us
+Eastern Sierra Transit Authority,Transitland,4/22/2025,4/22/2025,https://www.transit.land/feeds/f-9q-easternsierra~ca~us
+Express Arrow,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+FlixBus-us,Transitland,1/4/2026,1/4/2026,https://www.transit.land/feeds/f-9-flixbus
+Fullington Trailways,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Go Bus,Manual,10/7/2025,N/A,N/A
+Greyhound-us,Transitland,1/4/2026,1/4/2026,https://www.transit.land/feeds/f-9-flixbus
+Indian Trails,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+International Bus Lines,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Jefferson Lines,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Jet Set Express,Manual,11/11/2025,N/A,N/A
+Lamers Connect,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Land to Air Express,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Limousine Express,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Martz Bus,TDS,8/1/2025,8/29/2025,https://maps.tds.ai/map
+Michigan Flyer,Transitland,10/23/2024,4/22/2025,https://www.transit.land/feeds/f-dps-michiganflyer~mi~us
+Miller Transportation,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+MTR Western,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+New York Trailways,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Northfield Lines,Manual,5/8/2025,N/A,N/A
+Northwestern Stage Lines,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Ocean Travel,Manual,5/9/2025,N/A,N/A
+Omnibus Express,Manual,5/27/2025,N/A,N/A
+Oregon POINT,Transitland,3/19/2025,4/22/2025,https://www.transit.land/feeds/f-point~or-us
+Pacific Crest Bus Lines,transitland,12/16/2025,12/16/2025,https://www.transit.land/feeds/f-9rb-pacificcrest~or~us
+Peoria Charter Coach,Manual,9/18/2025,N/A,N/A
+Peter Pan (BZ),TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Peter Pan Bus Lines,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Pine Hill Trailways,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Plymouth & Brockton Street Railway Co.,Transitland,4/11/2025,4/22/2025,https://www.transit.land/feeds/f-drm-plymouthbrockton~ma~us
+Rapid Connection,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+RedCoach,Manual,10/3/2025,N/A,N/A
+Redding Area Bus Authority,Transitland,10/30/2025,10/30/2025,https://rabagtfs.z5.web.core.windows.net/rabagtfs.zip
+Reindeer Shuttle Inc.,Manual,6/6/2025,N/A,N/A
+Rensselaer County/Yankee Trails,Transitland,12/11/2024,4/22/2025,https://www.transit.land/feeds/f-rensselaer~county~yankee~trails
+Rochester City Lines,Mobility Database,6/7/2024,12/16/2025,https://mobilitydatabase.org/feeds/gtfs/mdb-1279
+Salmon Runner Bus,Manual,5/29/2025,N/A,N/A
+Salt Lake Express,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+ShortLine Hudson,Transitland,5/26/2025,6/24/2025,https://api.prod.coachusa.com/gtfs
+Southeastern Stages,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Southern Express,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Sunway Charters,TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Superior Tours,Manual,5/16/2025,N/A,N/A
+Tornado Bus,Manual,5/17/2025,N/A,N/A
+"Trans-Bridge Lines, Inc.",TDS,8/15/2025,8/29/2025,https://maps.tds.ai/map
+Van Galder (Coach USA),Transitland,5/26/2025,6/24/2025,https://api.prod.coachusa.com/gtfs
+Vermont Translines,Transitland,3/12/2025,6/16/2025,https://www.transit.land/feeds/f-dru-vttranslines~vt~us
+Virginia Breeze,Transitland,5/30/2023,4/22/2025,https://www.transit.land/feeds/f-virginia~breeze
+Vonlane Bus,Manual,5/20/2025,N/A,N/A
+W&H Bus,Manual,6/9/2025,N/A,N/A
+Wisconsin Coach Lines,Transitland,5/26/2025,6/24/2025,https://api.prod.coachusa.com/gtfs
+Xe ?ò Hoàng,Manual,6/9/2025,N/A,N/A

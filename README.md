@@ -1,8 +1,15 @@
-# Intercity Bus GTFS Workflow
+# Intercity Bus GTFS (IBG) Workflow
 
 ## Overview
 
-This repository offers GTFS (General Transit Feed Specification) based datasets in both GeoJSON and consolidated GTFS feed formats, along with a comprehensive step-by-step guide for cleaning, merging, validating, and processing GTFS data for intercity bus feeds. `GTFS_Data_Processing.ipynb` includes the complete data processing code. The processed data is intended for mapping and analysis in GIS tools such as ArcGIS Pro or QGIS.
+This repository offers a step-by-step workflow for cleaning, merging, validating, and visualizing GTFS (General Transit Feed Specification) data for intercity bus services.
+
+`GTFS_Data_Processing.ipynb` notebook contains the complete data processing pipeline. The processed outputs are designed for mapping, spatial analysis, and visualization in GIS platforms such as ArcGIS Pro and QGIS.
+
+The repository also includes the GTFS based IBG, consisting of:
+- A consolidated GTFS feed (`Merged_GTFS_Feed.zip`)
+- A simplified GeoJSON file (`intercity_GeoJSON_dataset.zip`)
+- Source metadata in CSV format, including data providers and collection dates (`Data_Source.csv`)
 
 ## Table of Contents
 
@@ -30,14 +37,14 @@ This repository offers GTFS (General Transit Feed Specification) based datasets 
   - `pandas` - for data manipulation
   - [`gtfs_kit`](https://pypi.org/project/gtfs-kit/) - for GTFS feed handling
   - [`folium`](https://pypi.org/project/folium/) - for interactive web mapping (includes `FeatureGroup`, `LayerControl`, `Map`, `PolyLine`, `CircleMarker`, `Popup`, and plugins)
-  - Standard libraries: `os`, `shutil`, `tempfile`, `csv`, `pathlib`, `collections`, `re`, `datetime`, `math`, `json`, `subprocess`, `itertools`, `typing`
+  - Standard libraries: `os`, `shutil`, `tempfile`, `csv`, `pathlib`, `collections`, `re`, `datetime`, `math`, `json`, `subprocess`, `itertools`, `typing`, `zipfile`, `colorsys`
 - [ArcGIS Pro](https://www.esri.com/en-us/arcgis/products/arcgis-pro/overview/) or [QGIS](https://qgis.org/)
 - [`gtfstidy`](https://github.com/patrickbr/gtfstidy) - for GTFS optimization and validation
    - Download pre-compiled binary from [releases](https://github.com/patrickbr/gtfstidy/releases), extract to a folder in your PATH
    - Verify installation of `gtfstidy -h` (should display help menu with available flags)
 
 ### Data Requirements
-- All GTFS feeds should be placed in a single root directory
+- All GTFS feeds should be placed in a single root directory *(e.g., gtfs_feeds)*
 - Each agency's feed should be in its own subfolder
 
 ---
@@ -49,7 +56,7 @@ Update these variables before running the workflow:
 ```python
 # Configuration (edit these before running)
 PROJECT_ROOT = Path.cwd()
-DATA_ROOT = PROJECT_ROOT / "data"  # place GTFS feeds + Agency_List.csv here
+DATA_ROOT = PROJECT_ROOT / "data"  # place GTFS feeds here
 ROOT_DIR = DATA_ROOT / "gtfs_feeds"  # each agency in its own subfolder
 RUN_TAG = "YYYY-MM-DD"  # update per run (e.g., 2026-01-20)
 
@@ -63,7 +70,6 @@ OUTPUT_DIR = PROJECT_ROOT / "outputs"
 WEEKLY_TRIPS_CSV = OUTPUT_DIR / f"weekly_trips_per_shape_{RUN_TAG}.csv"
 GEOJSON_OUTPUT = OUTPUT_DIR / f"Merged_Agencies_{RUN_TAG}.geojson"
 MAP_OUTPUT = OUTPUT_DIR / f"Intercity_bus_map_{RUN_TAG}.html"
-AGENCY_LIST_CSV = DATA_ROOT / "Agency_List.csv"
 
 # Interactive route filtering (Step 4)
 INTERACTIVE_ROUTE_FILTERING = True  # keep True for manual input
@@ -87,10 +93,8 @@ for _dir in [UNIQUE_FEEDS_DIR, MERGED_FEED_DIR, OUTPUT_DIR]:
 2. When GTFS feeds are unavailable, create the feeds manually using schedules from the respective agencies. [o2g](https://github.com/hiposfer/o2g), [osm2gtfs](https://github.com/grote/osm2gtfs) and [GTFS Builder](https://www.nationalrtap.org/Technology-Tools/GTFS-Builder) are some of the tools to create these GTFS feeds. [Transcor Data Services (TDS)](https://maps.tds.ai/) is another source for manual data creation. For smaller agencies, the `.txt` files can be built by hand.
 3. Unzip each feed into its own folder
 4. Verify each folder contains the required GTFS `.txt` files
-5. Maintain a reference spreadsheet `Agency_List.csv` with agency names, source URLs, source dates, and download dates.
-6. Place all agency folders into `ROOT_DIR` (configured in the **Configuration** section above).
+5. Place all agency folders into `ROOT_DIR` (configured in the **Configuration** section above).
    - By default, the notebook expects feeds at: `DATA_ROOT/gtfs_feeds/`
-   - The notebook also expects `Agency_List.csv` at: `DATA_ROOT/Agency_List.csv`
 
 ### Expected Output
 A directory structure like:
@@ -176,7 +180,7 @@ The `check_required_files()` function compares the list of loaded files against 
 - `agency.txt`, `stops.txt`, `routes.txt`, `trips.txt`, `stop_times.txt`, `calendar.txt`
 
 and optional files:
-- `calendar_dates.txt`, `fare_attributes.txt`, `fare_rules.txt`, `shapes.txt`, `frequencies.txt`, `transfers.txt`, `feed_info.txt`, `attributions.txt`
+- `calendar_dates.txt`, `shapes.txt`
 
 → If any required files are missing, the validation skips that agency entirely.
 
@@ -364,7 +368,6 @@ The consolidation process uses `gtfs_kit` to safely merge feeds while preserving
      - **Core files**: `agency.txt`, `stops.txt`, `routes.txt`, `trips.txt`, `stop_times.txt`
      - **Schedule files**: `calendar.txt`, `calendar_dates.txt`
      - **Geographic files**: `shapes.txt`
-     - **Optional files** (if present): `fare_attributes.txt`, `fare_rules.txt`, `transfers.txt`, `frequencies.txt`, `feed_info.txt`, `attributions.txt`
    - Uses **`pd.concat()`** (pandas.concat) to append rows from each feed
    - Preserves all columns; adds NaN for missing columns in some feeds
 
@@ -722,18 +725,16 @@ The GeoJSON output contains two types of features:
 
 ### 8.1 Load GTFS Data and Supporting Files
 
-This step loads all required GTFS files from the merged and tidied feed directory (`MERGED_TIDY_FEED_DIR`, typically named `Merged_Feed_tidy`), along with supporting data files:
+This step loads all required GTFS files from the merged and tidied feed directory (`MERGED_TIDY_FEED_DIR`, typically named `Merged_Feed_tidy`), along with the weekly trips data:
 
 - **Core GTFS files**: Reads `agency.txt`, `routes.txt`, `trips.txt`, `stops.txt`, `shapes.txt`, and `stop_times.txt` from the merged feed using **`pd.read_csv()`**
 - **Weekly trips data**: Loads `WEEKLY_TRIPS_CSV` (generated in **Step 7**; filename follows `weekly_trips_per_shape_{RUN_TAG}.csv`)
-- **Source metadata**: Reads the `Agency_List.csv` file using **`pd.read_csv()`** with `encoding='ISO-8859-1'` to handle special characters
 
-The process prints summary statistics using **`len()`** to count rows and **`.columns.tolist()`** to list column names. This helps verify that all required data is present before building the GeoJSON features.
+The process prints summary statistics (loaded shape count and column names for routes and stops) to verify that all required data is present before building the GeoJSON features.
 
 ### Key Functions
 
 - **`pd.read_csv()`**: Reads CSV files into pandas DataFrames
-- **`os.path.join()`**: Constructs file paths safely across operating systems
 - **`len()`**: Counts the number of rows in DataFrames
 - **`.columns.tolist()`**: Extracts column names as a list
 
@@ -751,11 +752,9 @@ This step creates GeoJSON LineString features for each route-shape combination i
    - Merges with `routes.txt` and `agency.txt` using **`.merge()`** with `on='route_id'` and `on='agency_id'` to enrich with route and agency metadata
 
 3. **Build route feature properties**:
-   - **Core fields**: Uses **`row.get()`** to safely retrieve `agency_name`, `agency_id`, `route_id`, `route_short_name`, `route_long_name`
-   - **Source information**: Filters source DataFrame using boolean indexing **`source_df[source_df['agency_name'] == ...]`** and retrieves values with **`.iloc[0].get()`**
-   - **Optional styling**: The notebook may read/normalize `route_color` and `route_text_color` during preprocessing, but the GeoJSON export step removes these keys by default (defensive cleanup) so they are not written to the final `.geojson`.
+   - **Core fields**: Uses **`row.get()`** to safely retrieve `feature_type` (set to `'route'`), `agency_name`, `agency_id`, `route_id`, `route_long_name`
    - **Weekly trips**: Filters weekly trips DataFrame using **`weekly_trips_df[weekly_trips_df['shape_id'] == shape_id]`** and extracts value with **`.iloc[0]`**
-   - **Stop information**: Filters trips using boolean indexing **`trips[(trips['route_id'] == route_id) & (trips['shape_id'] == shape_id)]`**, then sorts stop_times with **`.sort_values('stop_sequence')`** and converts to list with **`.tolist()`**
+   - **Stop information**: Filters trips using boolean indexing **`trips[(trips['route_id'] == route_id) & (trips['shape_id'] == shape_id)]`**, gets one representative trip, then sorts its stop_times with **`.sort_values('stop_sequence')`** and converts to list with **`.tolist()`**. Also includes `stop_count`.
 
 4. **Create GeoJSON features**: Each feature contains a LineString geometry with the shape coordinates and a properties dictionary with all route metadata.
 
@@ -771,17 +770,13 @@ This step creates GeoJSON Point features for each stop in the GTFS feed, enriche
    - Groups by `stop_id` using **`defaultdict(list)`** to collect all unique routes serving each stop
 
 2. **Build stop-route relationships**:
-   - For each stop, creates a list of route information dictionaries using **`row.get()`** to safely retrieve:
-       - `route_id`, `agency_id`, `route_short_name`, `route_long_name`
-       - > Note: `route_color` / `route_text_color` are not written to the final GeoJSON (export cleanup), and `route_type` is not included in the notebook’s per-stop route dictionaries.
+   - For each stop, creates a list of route information dictionaries containing:
+       - `route_id`, `agency_id`
    - Only adds unique routes using **`if route_info not in stop_route_info[stop_id]`** to avoid duplicates
 
 3. **Create stop feature properties**:
-   - **Core fields**: Uses **`stop.get()`** to retrieve `stop_id`, `stop_name`, `agency_name` (from first route serving the stop)
+   - **Core fields**: `feature_type` (set to `'stop'`), `stop_id`, `stop_name`, `agency_name` (from first route serving the stop)
    - **Route information**: Gets routes using **`stop_route_info.get(stop_id, [])`** and counts with **`len()`** for `route_count` (useful for identifying major transfer hubs)
-   - **Source information**: Filters source DataFrame using **`source_df[source_df['agency_id'] == agency_id]`** and retrieves with **`.iloc[0].get()`**
-   - **Optional GTFS fields**: Checks for values using **`pd.notna()`** before including `stop_code`, `stop_desc`, `stop_url`, `stop_timezone`, and `wheelchair_boarding`.
-     - > Note: `zone_id` is removed from the final GeoJSON by the export cleanup.
 
 4. **Create GeoJSON features**: Each feature contains a Point geometry with `[longitude, latitude]` coordinates and a properties dictionary with all stop metadata.
 
@@ -795,12 +790,15 @@ This step combines all route and stop features into a single GeoJSON FeatureColl
    - Combines the `route_features` list (LineString features) with the `stop_features` list (Point features) using list concatenation **`route_features + stop_features`**
    - Wraps them in a GeoJSON FeatureCollection structure with `type: "FeatureCollection"` and a `features` array
 
-2. **Export to file**:
+2. **Defensive cleanup**:
+   - Removes unwanted property keys (`route_type`, `route_color`, `route_text_color`, `zone_id`) from all feature properties and nested stop-route dictionaries before writing to disk
+
+3. **Export to file**:
    - Saves the combined GeoJSON using **`json.dump()`** with `indent=2` for formatting
    - Opens file with **`open(output_file, 'w', encoding='utf-8')`** to handle special characters in agency names, route names, and stop names
    - Uses **`with`** statement for proper file handling
 
-3. **Summary output**:
+4. **Summary output**:
    - Prints the total number of features using **`len(geojson['features'])`** and **`len(route_features)`**, **`len(stop_features)`** for breakdown
 
 ### Key Functions
@@ -817,13 +815,13 @@ This step provides a quick preview of the generated GeoJSON features to verify t
    - Accesses first feature using **`geojson['features'][0]`** and serializes with **`json.dumps()`** with `indent=2`
    - Truncates output using string slicing **`[:500]`** for readability
    - Shows the complete structure including geometry type (LineString), coordinates, and all properties
-   - Useful for verifying that route metadata (agency name, route names, weekly trips, source information) is correctly included
+   - Useful for verifying that route metadata (agency name, route name, weekly trips) is correctly included
 
 2. **Sample stop feature**:
    - Calculates stop feature index using **`len(route_features)`** to find first stop after all routes
    - Accesses feature using **`geojson['features'][stop_feature_index]`** and displays with **`json.dumps()`**
    - Shows the Point geometry with coordinates and stop properties
-   - Verifies that route relationships, agency information, and optional fields are properly structured
+   - Verifies that route relationships and agency information are properly structured
 
 **Sample console output (truncated)**:
 
@@ -832,10 +830,10 @@ Sample Route Feature:
 {
   "type": "Feature",
   "properties": {
+    "feature_type": "route",
     "agency_name": "Oregon POINT",
     "agency_id": "19",
     "route_id": 201,
-    "route_short_name": "NorthWest",
     "route_long_name": "Portland-Astoria",
     "weekly_trips": 28,
     "stops": ["935","562","2343","1242","2344","962","3625","1835","1189","2051","329"],
@@ -850,12 +848,13 @@ Sample Route Feature:
       ...
     ]
   }
-}
+},
 
 Sample Stop Feature:
 {
   "type": "Feature",
   "properties": {
+    "feature_type": "stop",
     "stop_id": "935",
     "stop_name": "Portland Amtrak Station",
     "agency_name": "Oregon POINT",
@@ -863,8 +862,6 @@ Sample Stop Feature:
       {
         "route_id": 201,
         "agency_id": 19,
-        "route_short_name": "NorthWest",
-        "route_long_name": "Portland-Astoria",
         ...
       }
     ],
@@ -873,7 +870,7 @@ Sample Stop Feature:
     "type": "Point",
     "coordinates": [-122.67736, 45.528996]
   }
-}
+},
 ```
 
 ### Key Functions
@@ -887,9 +884,8 @@ This preview helps ensure the GeoJSON output is correctly formatted before using
 ### Expected Output
 
 - **`Merged_Agencies_{RUN_TAG}.geojson`**: A standards-compliant GeoJSON FeatureCollection (written to `GEOJSON_OUTPUT`) containing:
-  - All route features as LineString geometries with comprehensive route metadata
+  - All route features as LineString geometries with route metadata and weekly trip frequency data
   - All stop features as Point geometries with route relationship information
-  - Complete source attribution and weekly trip frequency data
 
 ---
 
@@ -897,12 +893,12 @@ This preview helps ensure the GeoJSON output is correctly formatted before using
 
 ### Purpose
 
-- This workflow creates a [**Python**](https://www.python.org/)-based **interactive web map** using Folium that displays all intercity bus routes, stops, and weekly trip frequencies from the GeoJSON file created in **Step 8**.  
+- This step creates a [**Python**](https://www.python.org/)-based **interactive web map** using Folium that displays all intercity bus routes, stops, and weekly trip frequencies from the GeoJSON file created in **Step 8**.  
 - It provides a lightweight and open-source alternative to traditional **GIS** visualization tools for creating shareable web maps.
 
 ### Methodology
 
-This workflow uses the GeoJSON file (`Merged_Agencies_{RUN_TAG}.geojson`) created in **Step 8** to generate an interactive web map. The GeoJSON already contains all route and stop features with their properties, so this step focuses on visualization.
+This step uses the GeoJSON file (`Merged_Agencies_{RUN_TAG}.geojson`) created in **Step 8** to generate an interactive web map. The GeoJSON already contains all route and stop features with their properties, so this step focuses on visualization.
 
 #### **1. Prepare the Files**
 - Define the following file paths in your script:  
@@ -911,9 +907,8 @@ This workflow uses the GeoJSON file (`Merged_Agencies_{RUN_TAG}.geojson`) create
 
 
 #### **2. Load GeoJSON Data**
-- Load the GeoJSON file using Python's `json` module or `geopandas` if available
-- Parse the FeatureCollection to extract route features (LineString) and stop features (Point)
-- Verify that the GeoJSON contains the expected properties (agency_name, route_id, weekly_trips, etc.)
+- Load the GeoJSON file using Python's `json` module
+- Parse the FeatureCollection to group features by agency name
 
 #### **3. Generate Interactive Map**
 
@@ -933,16 +928,15 @@ This step loads the GeoJSON file created in **Step 8** and creates an interactiv
 
 4. **Add route layers**:
    - For each agency, creates a `FeatureGroup` layer (initially hidden; users toggle visibility via layer control)
-   - Plots routes as colored `PolyLine` objects with pop-ups showing:
-     - Route name, route ID, agency name
-     - Weekly trips (from GeoJSON properties)
-     - Distance information if available
+   - Plots routes as colored `PolyLine` objects with pop-ups showing all route properties:
+     - Agency name, agency ID, route ID, route long name
+     - Weekly trips, stops list, and stop count
    - Line **thickness encodes weekly frequency** using `get_line_weight()`:
      - `< 6 trips` → weight 2
-     - `6–10 trips` → weight 4
-     - `11–20 trips` → weight 6
-     - `21–35 trips` → weight 8
-     - `36+ trips` → weight 10
+     - `6–9 trips` → weight 4
+     - `10–19 trips` → weight 6
+     - `20–34 trips` → weight 8
+     - `35+ trips` → weight 10
    - A fixed legend overlay explains these bands so the map viewer understands the symbology
 
 5. **Add stop markers** (matches the notebook):
@@ -978,7 +972,7 @@ This step loads the GeoJSON file created in **Step 8** and creates an interactiv
       - Displays routes as colored lines and stops as clickable points  
       - Groups routes by agency, each with a unique color (initially hidden; toggle via layer control)  
       - Allows toggling agencies using the layer control  
-      - Shows route names, route IDs, agency names, and weekly trip counts in route pop-ups  
+      - Shows route long names, route IDs, agency names, and weekly trip counts in route pop-ups  
       - Shows stop names, stop IDs, and routes serving each stop in stop pop-ups  
      - Uses data from the GeoJSON file created in **Step 8** (`Merged_Agencies_{RUN_TAG}.geojson`)
 
