@@ -11,7 +11,7 @@ The repository also includes the GTFS based IBG, consisting of:
 - A simplified GeoJSON file (`intercity_GeoJSON_dataset.zip`)
 - Source metadata in CSV format, including data providers and collection dates (`Data_Source.csv`)
 
-![Intercity bus network map](../Paper_Draft/intercity_map.jpg)
+![Intercity bus network map](/intercity_map.jpg)
 
 An interactive ArcGIS map of the IBG, including agency selection options, is available at [UTEL @ UIUC | US Intercity Bus Map](https://rb.gy/wcaj18).
 
